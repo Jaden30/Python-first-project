@@ -1,0 +1,79 @@
+# open gene file
+first_file = open("GO0003723.genelist.txt")
+all = first_file.read()
+
+
+#removing the new line so split it
+
+gene_list = all.split("\n")
+
+#creating the first dictionary
+#open an empty dictionary
+first_dic = {}
+#splitting it into a list enables easy extraction of attributes needed 
+for row in gene_list:
+	gene = row.split("\t")
+	if len(gene) > 1:   #making conditional statements to ensure it only prints when the condition is met
+		name = gene[3]
+		descrip = gene[4]
+		first_dic [name] = descrip
+		#print(first_dic)
+# the len is to ensure an error is not returned because of an empty attribute
+
+#open diff file
+diff_file = open("diffexp.tsv")
+values = diff_file.read() 
+
+#remove the new line 
+diff_list = values.split("\n")
+#open an empty dictionary 
+second_dic = {}
+#splitting it to a list enables easy extraction of attributes needed 
+for rows in diff_list:
+	val = rows.split("\t")
+	if len(val) > 1:   #making conditional statements to ensure it only prints when the condition is met
+		second_name = val[0]
+		p_value = val[4]
+		second_dic [second_name] = p_value
+		#print(second_dic)
+
+#The lists have been put into different dictionaries 
+
+#putting the dictionaries into one output file by using a for loop
+
+assigned = open("GOdiff_oiao1.out", "w")
+
+for key in first_dic:
+	if key in second_dic:
+		assigned.write(key + "\t" + str(first_dic.get(key)) + "\t" + str(second_dic.get(key)) + "\n")
+
+assigned.close()
+#the file with the gene name,description and feature type has been created
+
+#opening the new file to confirm code is accurate 
+assigned = open("GOdiff_oiao1.out")
+answers = assigned.read()
+#print(contents)
+
+#removing new lines and tabs in order to extract the name and p_value
+answers_split = answers.split("\n")
+#opening an empty final dictionary
+third_dic = {}
+
+for rows in answers_split:
+	con = rows.split("\t")
+	if len(con) > 1:
+		gene_name = con[0]
+		p_value = con[2]
+#float function converts all the values to a floating point number
+# floating the values to be able to read it
+		floating_value = float(p_value)
+		third_dic [gene_name] = floating_value
+		#print(third_dic)
+
+# getting the minimum value is:
+#using the min function obtains the minimum value
+minimum_value = min(third_dic.values())
+res = [key for key in third_dic if third_dic[key] == minimum_value]
+#this should get the minimum value of the p_value 
+print("the minimum p_value is: " + str(res))
